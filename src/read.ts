@@ -10,11 +10,12 @@ interface Locations {
 }
 
 async function load() {
-  const content = await fs.readFile('./election.txt', 'utf-8')
+  const content = await fs.readFile('./_debug.csv', 'utf-8')
+
   const locations: Locations[] = content
     .split('\n')
-    .map((line) => line.split(', '))
-    .map(([order, province, name]) => ({
+    .map((line) => line.replace(/\"/g, '').split(','))
+    .map(([name, province, order]) => ({
       order: parseInt(order),
       province,
       name,
@@ -30,18 +31,18 @@ async function load() {
       )
 
       const json = response.data.results?.[0]
-      // console.log(JSON.stringify(json, null, 2))
 
       const {lat, lng} = json.geometry.location
       const {name, formatted_address, place_id, business_status} = json
 
       const fileContent = `"${location.name}","${location.province}","${location.order}","${name}","${formatted_address}","${place_id}","${business_status}","${lat}","${lng}"\n`
-      await fs.appendFile('./locations.csv', fileContent)
+
+      await fs.appendFile('./_locations2.csv', fileContent)
       console.log(`[ok] ${name} ${lat},${lng}`)
     } catch (e) {
-      console.warn(`failure on ${location?.name}`, e)
+      console.warn(`[fail] ${location?.name}`, e)
       await fs.appendFile(
-        './fails.csv',
+        './_fails.csv',
         `"${location?.name}","${location?.province}","${location?.order}"\n`
       )
       continue
