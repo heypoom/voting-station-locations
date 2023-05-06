@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 import axios from 'axios'
 
-const API_KEY = 'AIzaSyAg0Sr2HGdven1484JQGHFiWs66hhuIW1o'
+const API_KEY = process.env.API_KEY
 
 interface Locations {
   order: number
